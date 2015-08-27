@@ -1,0 +1,53 @@
+package com.mct.view.task;
+
+import android.os.AsyncTask;
+
+import com.mct.utils.CommonUtil;
+import com.mct.utils.HttpUtils;
+
+public class DownloadTask extends AsyncTask<Object, Integer, Object> {
+	private OnDownloadListener listener;
+
+	private String userName;
+
+	public DownloadTask(String userName,OnDownloadListener listener) {
+		this.userName = userName;
+		this.listener = listener;
+	}
+
+	@Override
+	protected Object doInBackground(Object... params) {
+		// TODO Auto-generated method stub
+		String url = (String) params[0];// œ¬‘ÿµÿ÷∑
+		return HttpUtils.download(url, CommonUtil.PHOTO_CACHE_PATH + userName);
+	}
+
+	@Override
+	protected void onPostExecute(Object result) {
+		// TODO Auto-generated method stub
+		super.onPostExecute(result);
+		if (null != listener) {
+			boolean r = (Boolean) result;
+			if (r) {
+				listener.onDownloadOK(userName);
+			} else {
+				listener.onDownloadFail(userName);
+			}
+		}
+	}
+
+	public interface OnDownloadListener {
+		void onDownloadOK(String name);
+
+		void onDownloadFail(String name);
+	}
+
+	public OnDownloadListener getListener() {
+		return listener;
+	}
+
+	public void setListener(OnDownloadListener listener) {
+		this.listener = listener;
+	}
+
+}

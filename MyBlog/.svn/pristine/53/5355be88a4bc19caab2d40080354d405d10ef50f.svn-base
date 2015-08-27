@@ -1,0 +1,174 @@
+package com.mct.utils;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+import com.mct.model.Article;
+import com.mct.model.ArticleItem;
+
+/**
+ * 帖子操作工具
+ * 
+ * @author huajian.zhang
+ * 
+ */
+public class ArticleUtil {
+	private static ArticleUtil instance;
+
+	private ArticleUtil() {
+
+	}
+
+	public static ArticleUtil getInstance() {
+		if (null == instance) {
+			instance = new ArticleUtil();
+		}
+		return instance;
+	}
+
+	/**
+	 * 发帖
+	 * 
+	 * @param conn
+	 *            数据库连接对象
+	 * @param title
+	 *            标题
+	 * @param content
+	 *            内容
+	 * @param user_id
+	 *            用户id
+	 * @param time
+	 *            时间
+	 * @param type
+	 *            类型
+	 * @return
+	 */
+	public boolean postingArticle(Connection conn, String title,
+			String content, int user_id, String time, int type) {
+		String sql = "insert into article (title,content,user_id,time,type) values ('"
+				+ title
+				+ "','"
+				+ content
+				+ "',"
+				+ user_id
+				+ ",'"
+				+ time
+				+ "',"
+				+ type + ")";
+		try {
+			Statement statement = conn.createStatement();
+			int row = statement.executeUpdate(sql);
+			if (row > 0) {
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/**
+	 * 获取帖子条目
+	 * 
+	 * @param conn
+	 *            数据库连接对象
+	 * @param limit
+	 *            获取总条数
+	 * @param currentCount
+	 *            当前已经得到的总条数
+	 * @return
+	 */
+	public ArrayList<ArticleItem> getArticle(Connection conn, int limit,
+			int currentCount) {
+		StringBuffer sb = new StringBuffer(
+				"select a._id,a.title,a.time,u.user_name,u.photo from article a , users u where a.user_id = u._id");
+		if (limit > 0) {
+			sb.append(" limit ").append(limit).append(" offset ").append(
+					currentCount);
+		}
+		String sql = sb.toString();
+		ArrayList<ArticleItem> list = null;
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			list = new ArrayList<ArticleItem>();
+			while (rs.next()) {
+				int a_id = rs.getInt("a._id");
+				String title = rs.getString("a.title");
+				String time = rs.getString("a.time");
+				String user_name = rs.getString("u.user_name");
+				String photo = rs.getString("u.photo");
+				int reply_count = getReplyCount(conn, a_id);
+				list.add(new ArticleItem(a_id, reply_count, user_name, title,
+						time, photo));
+			}
+			rs.close();
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	/**
+	 * 根据帖子id获取帖子的回复数量
+	 * 
+	 * @param conn
+	 *            数据库连接对象
+	 * @param article_id
+	 *            帖子id
+	 * @return
+	 */
+	private int getReplyCount(Connection conn, int article_id) {
+		String sql = "select count(*) from reply where article_id = "
+				+ article_id;
+		int count = 0;
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			if (rs.next()) {
+				count = rs.getInt("count(*)");
+			}
+			rs.close();
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return count;
+	}
+
+	/**
+	 * 根据帖子id获取帖子详情
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public Article getArticle(Connection conn, int id) {
+		String sql = "select * from article where _id=" + id;
+		Statement statement;
+		Article article = null;
+		try {
+			statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql);
+			if (rs.next()) {
+				String content = rs.getString("content");
+				int u_id = rs.getInt("user_id");
+				int type = rs.getInt("type");
+				article = new Article(content, u_id, type);
+			}
+			rs.close();
+			statement.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return article;
+	}
+
+}

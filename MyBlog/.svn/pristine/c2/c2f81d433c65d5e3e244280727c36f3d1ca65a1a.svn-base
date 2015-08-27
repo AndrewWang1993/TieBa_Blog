@@ -1,0 +1,54 @@
+package com.mct.utils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.mct.model.Article;
+
+/**
+ * 帖子操作工具
+ * 
+ * @author huajian.zhang
+ * 
+ */
+public class ArticleUtil {
+	private static ArticleUtil instance;
+
+	private ArticleUtil() {
+
+	}
+
+	public static ArticleUtil getInstance() {
+		if (null == instance) {
+			instance = new ArticleUtil();
+		}
+		return instance;
+	}
+
+	public boolean postingArticle(Connection conn, String title,
+			String content, int user_id, String time, int type) {
+		String sql = "insert into article (title,content,user_id,time,type) values ('"
+				+ title
+				+ "','"
+				+ content
+				+ "',"
+				+ user_id
+				+ ",'"
+				+ time
+				+ "',"
+				+ type + ")";
+		try {
+			Statement statement = conn.createStatement();
+			int row = statement.executeUpdate(sql);
+			if (row > 0) {
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+}

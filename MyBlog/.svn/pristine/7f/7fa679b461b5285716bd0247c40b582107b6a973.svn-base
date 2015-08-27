@@ -1,0 +1,90 @@
+package com.mct.servlet;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.mct.utils.DbUtil;
+import com.mct.utils.UploadUtil;
+import com.mct.utils.UserDbUtil;
+
+public class UpdateUserInfo extends HttpServlet {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		resp.setContentType("text/html;charset=UTF-8");
+		// 需要更新的用户id
+		long id = Long.parseLong(req.getParameter("id"));
+		// 获取用户名
+		String userName = req.getParameter("name");
+		// 昵称
+		String nick = req.getParameter("nick");
+		String birth = req.getParameter("birth");
+		String sex = req.getParameter("sex");
+		String phone = req.getParameter("phone");
+		// 是否有头像（1表示有，0表示没有）
+		int hasPhoto = Integer.parseInt(req.getParameter("hasPhoto").trim());
+		PrintWriter pw = resp.getWriter();
+		boolean updateInfo = false,saveHeadIcon = false;
+		if (hasPhoto == 0) {
+			updateInfo = UserDbUtil.getInstance().updateUserInfo(
+					DbUtil.openDb(), id, userName, nick, null, birth, sex,
+					phone);
+			saveHeadIcon = true;
+		} else if (hasPhoto == 1) {
+			// 有头像的注册
+			String saveName = userName + ".jpg";
+			File file = new File(RegistSevlet.PHOTO_PATH+saveName);
+			//如果头像存在则删除
+			if(file.exists()){
+				file.delete();
+			}
+			// 获取当前项目的网址,如：http://a0:8080/MyBlog/
+			String basePath = req.getScheme() + "://" + req.getServerName()
+					+ ":" + req.getServerPort() + req.getContextPath() + "/";
+			// 头像下载地址
+			String iconUrl =  basePath + "download?filename=" + saveName;
+			//更新头像下载地址
+			updateInfo = UserDbUtil.getInstance().updateUserInfo(
+					DbUtil.openDb(), id, userName, nick, iconUrl, birth, sex,
+					phone);
+			// 注册用户其中photo内容为要下载的头像的服务器地址，如：http://a0:8080/MyBlog/download?filename=abc.jpg
+			saveHeadIcon = UploadUtil.saveFile(req, RegistSevlet.PHOTO_PATH, saveName);
+		}
+		if (updateInfo && saveHeadIcon) {
+			pw.write("{result:1}");
+			// 注册成功
+		} else {
+			if (updateInfo) {
+				pw.write("{result:2}");
+				// 头像保存失败
+			} else {
+				pw.write("{result:-1}");
+				// 注册失败
+			}
+		}
+		pw.flush();
+		pw.close();
+
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(req, resp);
+	}
+
+}

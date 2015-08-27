@@ -1,0 +1,86 @@
+package com.mct.model;
+
+/**
+ * Ìû×ÓÀà
+ * 
+ * @author Whunf
+ * 
+ */
+public class Article {
+	private int id;
+	private int user_id;
+	private int type;
+	private String title;
+	private String content;
+	private String time;
+
+	public Article() {
+		super();
+	}
+
+	public Article(int id, String title, String content, int userId,
+			String time, int type) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.content = content;
+		user_id = userId;
+		this.time = time;
+		this.type = type;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public Article setId(int id) {
+		this.id = id;
+		return this;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public Article setTitle(String title) {
+		this.title = title;
+		return this;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public Article setContent(String content) {
+		this.content = content;
+		return this;
+	}
+
+	public int getUser_id() {
+		return user_id;
+	}
+
+	public Article setUser_id(int userId) {
+		user_id = userId;
+		return this;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public Article setTime(String time) {
+		this.time = time;
+		return this;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public Article setType(int type) {
+		this.type = type;
+		return this;
+	}
+
+}

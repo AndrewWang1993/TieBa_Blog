@@ -1,0 +1,98 @@
+package com.mct.activity;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+
+import com.mct.blog.R;
+import com.mct.control.MainPagerAdater;
+import com.mct.utils.UserUtil;
+import com.mct.view.fragment.ArticleListFragment;
+import com.mct.view.fragment.SettingFragment;
+import com.mct.view.fragment.SquareFragment;
+import com.mct.view.fragment.UserInfoFragment;
+
+public class MainActivity extends FragmentActivity implements OnClickListener {
+	private ViewPager mPager;
+	private RadioGroup tabGroup;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		mPager = (ViewPager) findViewById(R.id.m_pager);
+		tabGroup = (RadioGroup) findViewById(R.id.tab_group);
+		findViewById(R.id.tab_article).setOnClickListener(this);
+		findViewById(R.id.tab_square).setOnClickListener(this);
+		findViewById(R.id.tab_me).setOnClickListener(this);
+		initPager();
+	}
+
+	private void initPager() {
+		Fragment[] fragments = new Fragment[4];
+		fragments[0] = new ArticleListFragment();
+		fragments[1] = new SquareFragment();
+		fragments[2] = new UserInfoFragment();
+		fragments[3] = new SettingFragment();
+		MainPagerAdater adapter = new MainPagerAdater(
+				getSupportFragmentManager(), fragments);
+		mPager.setAdapter(adapter);
+		mPager.setOnPageChangeListener(new OnPageChangeListener() {
+
+			@Override
+			public void onPageSelected(int arg0) {
+				// TODO Auto-generated method stub
+				if (arg0 < 3) {
+					((RadioButton) tabGroup.getChildAt(arg0)).setChecked(true);
+				}else{
+					tabGroup.clearCheck();
+				}
+			}
+
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()) {
+		case R.id.tab_article:
+			mPager.setCurrentItem(0);
+			break;
+		case R.id.tab_square:
+			mPager.setCurrentItem(1);
+			break;
+		case R.id.tab_me:
+			mPager.setCurrentItem(2);
+			break;
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		//×¢ÏúÓÃ»§
+		UserUtil.getInstance().logout();
+	}
+	
+	
+
+}

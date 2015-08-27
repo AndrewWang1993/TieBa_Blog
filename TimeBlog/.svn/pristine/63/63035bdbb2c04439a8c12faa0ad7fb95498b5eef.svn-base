@@ -1,0 +1,18 @@
+package com.mct.view.task;
+
+import android.os.AsyncTask;
+
+/**
+ * 回复相关任务：发表回复、获取回复
+ * @author Whunf
+ *
+ */
+public class ReplyTask extends AsyncTask<Object, Integer, Object> {
+
+	@Override
+	protected Object doInBackground(Object... params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

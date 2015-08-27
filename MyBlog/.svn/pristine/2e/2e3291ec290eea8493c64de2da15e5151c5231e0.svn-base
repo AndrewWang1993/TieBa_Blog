@@ -1,0 +1,31 @@
+package com.mct.utils;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+
+public class DbUtil {
+	private static Connection instance;
+
+	public static Connection openDb() {
+		if (null == instance) {
+			String driver = "com.mysql.jdbc.Driver";
+			// URL指向要访问的数据库名diary_db
+			String url = "jdbc:mysql://127.0.0.1:3306/blog_db";
+			// MySQL配置时的用户名
+			String user = "root";
+			// Java连接MySQL配置时的密码
+			String password = "root";
+			try {
+				// 加载驱动程序
+				Class.forName(driver);
+				// 连续数据库
+				instance = DriverManager.getConnection(url, user, password);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		return instance;
+	}
+
+}

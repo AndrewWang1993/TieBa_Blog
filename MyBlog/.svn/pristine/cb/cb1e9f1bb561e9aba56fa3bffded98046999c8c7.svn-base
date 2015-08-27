@@ -1,0 +1,159 @@
+package com.mct.utils;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.mct.model.User;
+
+public class UserDbUtil {
+	private static UserDbUtil instance;
+
+	private UserDbUtil() {
+
+	}
+
+	public static UserDbUtil getInstance() {
+		if (null == instance) {
+			instance = new UserDbUtil();
+		}
+		return instance;
+	}
+
+	/**
+	 * 用户登录
+	 * 
+	 * @param conn
+	 * @param name
+	 * @param psw
+	 * @return
+	 */
+	public User login(Connection conn, String name, String psw) {
+		User user = null;
+		try {
+			Statement statement = conn.createStatement();
+			// 要执行的SQL语句
+			String sql = "select * from users where user_name = '" + name
+					+ "' and psw = '" + psw + "'";
+			ResultSet rs = statement.executeQuery(sql);
+			if (rs.next()) {
+				int id = rs.getInt("_id");
+				String nick = rs.getString("nick");
+				String phone = rs.getString("phone");
+				long birth = rs.getLong("birth");
+				String sex = rs.getString("sex");
+				String photo = rs.getString("photo");
+				user = new User(id, name);
+				user.setPhoto(photo).setBirth(birth).setNick(nick).setSex(sex)
+						.setPhone(phone);
+			}
+			rs.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return user;
+	}
+
+	/**
+	 * 注册用户：用户名、密码
+	 * @param conn
+	 * @param userName
+	 * @param psw
+	 * @return
+	 */
+	public boolean regist(Connection conn, String userName, String psw) {
+		return regist(conn, userName, psw, "", "");
+	}
+
+	/**
+	 * 注册用户：用户名、密码、头像
+	 * 
+	 * @param conn
+	 * @param userName
+	 * @param psw
+	 * @param photo
+	 * @return
+	 */
+	public boolean regist(Connection conn, String userName, String psw,
+			String photo) {
+		return regist(conn, userName, psw, "", photo);
+	}
+
+	/**
+	 * 注册用户：用户名、密码、昵称、头像
+	 * 
+	 * @param conn
+	 * @param userName
+	 * @param psw
+	 * @param nick
+	 * @param photo
+	 * @return
+	 */
+	public boolean regist(Connection conn, String userName, String psw,
+			String nick, String photo) {
+		try {
+			Statement statement = conn.createStatement();
+			String sql = "insert into users (user_name,psw,photo,nick) values ('"
+					+ userName
+					+ "','"
+					+ psw
+					+ "','"
+					+ photo
+					+ "','"
+					+ nick
+					+ "');";
+			int row = statement.executeUpdate(sql);
+			if (row > 0) {
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean updateUserInfo(Connection conn, String userName,
+			String nick, String photo, String birth, String phone) {
+		HashMap<String, String> map = new HashMap<String, String>();
+		if (null != userName && !"".equals(userName)) {
+			map.put("user_name", userName);
+		}
+		if (null != nick && !"".equals(nick)) {
+			map.put("nick", nick);
+		}
+		if (null != photo && !"".equals(photo)) {
+			map.put("photo", photo);
+		}
+		if (null != birth && !"".equals(birth)) {
+			map.put("birth", birth);
+		}
+		if (null != phone && !"".equals(phone)) {
+			map.put("phone", phone);
+		}
+		return updateUserInfo(conn, map);
+	}
+
+	public boolean updateUserInfo(Connection conn, HashMap<String, String> map) {
+		if (map.size() > 0) {
+			StringBuffer sb = new StringBuffer("update table users set ");
+			Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, String> entry = it.next();
+				sb.append(entry.getKey()).append("='").append(entry.getValue())
+						.append("',");
+			}
+			String sql = sb.toString();
+			// 取消最后一个逗号
+			sql = sql.substring(0, sql.length() - 1);
+			System.out.println(sql);
+		}
+		return false;
+	}
+
+}

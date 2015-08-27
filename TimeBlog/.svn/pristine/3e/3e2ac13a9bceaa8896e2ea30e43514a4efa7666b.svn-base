@@ -1,0 +1,10 @@
+package com.mct.utils;
+
+public class Common {
+	public static final String BASE_URL = "http://10.0.2.2:8080/MyBlog/";
+	// µÇÂ¼µØÖ·
+	public static final String URL_LOGIN = BASE_URL + "login";
+	// ×¢²áµØÖ·
+	public static final String URL_REGIST = BASE_URL + "regist";
+
+}

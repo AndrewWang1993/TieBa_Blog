@@ -1,0 +1,57 @@
+package com.mct.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.alibaba.fastjson.JSON;
+import com.mct.model.ArticleItem;
+import com.mct.utils.ArticleUtil;
+import com.mct.utils.DbUtil;
+
+public class ListArticleServlet extends HttpServlet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		resp.setContentType("text/html;charset=UTF-8");
+		ArrayList<ArticleItem> list = null;
+		//获取每页的个数
+		String limitStr = req.getParameter("limit");
+		int limit = 0, currentCount = 0;
+		if (null != limitStr && !"".equals(limitStr)) {
+			limit = Integer.parseInt(limitStr);
+			//获取当前已加载的个数
+			currentCount = Integer.parseInt(req.getParameter("current"));
+		}
+		list = ArticleUtil.getInstance().getArticle(DbUtil.openDb(), limit,
+				currentCount);
+		PrintWriter pw = resp.getWriter();
+		if (null != list && list.size() > 0) {
+			String json = JSON.toJSONString(list);
+			pw.write(json);
+		} else {
+			pw.write("result:-1");
+		}
+		pw.flush();
+		pw.close();
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(req, resp);
+	}
+
+}

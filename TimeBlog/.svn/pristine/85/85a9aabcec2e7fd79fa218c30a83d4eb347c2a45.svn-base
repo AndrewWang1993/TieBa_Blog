@@ -1,0 +1,10 @@
+package com.mct.utils;
+
+/**
+ * 帖子操作工具（从服务端获取、提交信息到服务端等等）
+ * @author Whunf
+ *
+ */
+public class ArticleUtil {
+
+}

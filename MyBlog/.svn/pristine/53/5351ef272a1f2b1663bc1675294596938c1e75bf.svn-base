@@ -1,0 +1,24 @@
+package com.mct.main;
+
+import com.mct.model.User;
+import com.mct.utils.DbUtil;
+import com.mct.utils.UserDbUtil;
+
+public class MainClass {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+//		boolean result = UserDbUtil.getInstance().regist(DbUtil.openDb(),
+//				"abd", "123456", "D:/blog/photo/abd.jpg");
+//		System.out.println(result);
+//		File file = new File("D:/upload_test/pic1.jpg");
+//		System.out.println(file.exists());
+		User u = UserDbUtil.getInstance().login(DbUtil.openDb(), "abc", "123456");
+		System.out.println(u);
+		
+	}
+
+}

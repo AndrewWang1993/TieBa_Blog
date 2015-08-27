@@ -1,0 +1,12 @@
+package com.mct.activity;
+
+import android.app.Activity;
+
+/**
+ * »Ø¸´Ò³Ãæ
+ * @author Whunf
+ *
+ */
+public class ReplyActivity extends Activity {
+
+}
